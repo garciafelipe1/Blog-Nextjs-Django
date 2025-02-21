@@ -1,4 +1,6 @@
 from rest_framework.generics import ListAPIView,RetrieveAPIView
+
+
 from .models import Post
 from .serializers import PostListSerializer,PostSerializer
 
