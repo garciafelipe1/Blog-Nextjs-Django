@@ -14,19 +14,23 @@ class CategoryAdmin(admin.ModelAdmin):
     ordering=('name',)
     readonly_fields=('id',)
     
-    
-class PostAdminForm(forms.ModelForm):
-    content = forms.CharField(widget=CKEditorWidget())    
-    class Meta:
-        model = Post
-        fields= '__all__'
- 
+
 class HeadingInline(admin.TabularInline):
     model = Heading
     extra = 0
     fields=('title','level','order','slug')
     prepopulated_fields={'slug':('title',)}
     ordering=('order',)
+
+
+  
+class PostAdminForm(forms.ModelForm):
+    content = forms.CharField(widget=CKEditorWidget())    
+    class Meta:
+        model = Post
+        fields= '__all__'
+ 
+
        
         
 @admin.register(Post)
@@ -37,7 +41,7 @@ class PostAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('title',)}
     list_filter = ('status', 'category', 'updated_at')
     ordering = ('-created_at',)
-    readonly_fields = ('id', 'created_at', 'updated_at',)
+    readonly_fields = ('id', 'created_at', 'updated_at')
 
     fieldsets = (
         ('General Information', {

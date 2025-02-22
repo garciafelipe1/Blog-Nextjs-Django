@@ -52,10 +52,12 @@ class Post(models.Model):
     keywords = models.CharField(max_length=128)
     slug = models.CharField(max_length=128)
     
-    category=models.ForeignKey(Category,on_delete=models.PROTECT,related_name="posts")
+    category=models.ForeignKey(Category,on_delete=models.PROTECT)
 
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
+
+    
 
     status = models.CharField(max_length=10, choices=status_options, default='draft')
    
@@ -68,6 +70,16 @@ class Post(models.Model):
     def __str__(self):
         return self.title
     
+
+
+class PostView(models.Model):
+    id=models.UUIDField(primary_key=True,default=uuid.uuid4,editable=False)
+    post=models.ForeignKey(Post,on_delete=models.PROTECT,related_name='post_views')
+    ip_adress=models.GenericIPAddressField()
+    timestap=models.DateTimeField(auto_now=True)
+    
+    
+
 
 class Heading(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -85,8 +97,8 @@ class Heading(models.Model):
     ])
     order = models.PositiveIntegerField()
 
-    class Meta:  # ✅ Corrige "META" por "Meta"
-        ordering = ("order",)  # ✅ Debe ser una tupla
+    class Meta:  
+        ordering = ("order",)  
 
     def save(self, *args, **kwargs):
         if not self.slug:
