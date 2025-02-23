@@ -2,7 +2,7 @@ from rest_framework.generics import ListAPIView,RetrieveAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from .models import Post,Heading
+from .models import Post,Heading,PostAnalytics
 from .serializers import PostListSerializer,PostSerializer,HeadingSerializer,PostView
 from .utils import get_client_ip
 
@@ -26,13 +26,10 @@ class PostDetailView(RetrieveAPIView):
         serializer_post=PostSerializer(post).data
         
         
-        client_ip=get_client_ip(request)
-        if PostView.objects.filter(post=post,ip_adress=client_ip).exists():
-            return Response(serializer_post)
-       
-        PostView.objects.create(post=post,ip_adress=client_ip)
-        
-        
+        post_analytics=PostAnalytics.objects.get(post=post)
+        post_analytics.increment_views(request)
+        #increment post count
+                
         return Response(serializer_post)
 
 

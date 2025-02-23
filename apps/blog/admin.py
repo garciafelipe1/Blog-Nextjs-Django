@@ -1,6 +1,6 @@
 from django.contrib import admin
 from ckeditor.widgets import CKEditorWidget 
-from .models import Heading,Category,Post
+from .models import Heading,Category,Post,PostAnalytics
 from django import forms
 
 
@@ -13,6 +13,7 @@ class CategoryAdmin(admin.ModelAdmin):
     list_filter=('parent',)
     ordering=('name',)
     readonly_fields=('id',)
+    
     
 
 class HeadingInline(admin.TabularInline):
@@ -70,3 +71,17 @@ class PostAdmin(admin.ModelAdmin):
 #     list_filter=('level','post')
 #     ordering=('post','order',)
 #     prepopulated_fields={'slug':('title',)}
+
+
+@admin.register(PostAnalytics)
+class PostAnalyticsAdmin(admin.ModelAdmin):
+    list_display = ('post_title','views', 'impressions', 'clicks', 'click_through_rate', 'avg_time_on_page')  # Usar un método en lugar de una relación directa
+    search_fields = ('post__title',)  # Esto sí es válido
+    readonly_fields = ('views', 'impressions', 'clicks', 'click_through_rate', 'avg_time_on_page',)
+    ordering = ('-post__created_at',)
+
+    def post_title(self, obj):
+        return obj.post.title
+
+    post_title.short_description = 'Post' 
+    
