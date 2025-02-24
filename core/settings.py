@@ -13,6 +13,8 @@ environ.Env.read_env()
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env("SECRET_KEY")
 
+VALID_API_KEYS=env.str("VALID_API_KEYS").split(",")
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -39,10 +41,12 @@ PROJECT_APPS = [
 
 THIRD_PARTY_APPS = [
     'rest_framework',
+    'rest_framework_api',
     'channels',
     'ckeditor',
     'ckeditor_uploader',
     'django_celery_results',
+    'django_celery_beat',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + PROJECT_APPS + THIRD_PARTY_APPS
@@ -151,6 +155,7 @@ MEDIA_ROOT=os.path.join(BASE_DIR,"media")
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
+
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         "rest_framework.permissions.AllowAny",
@@ -167,6 +172,7 @@ CHANELLS_LAYERS = {
     }
 }
 
+REDIS_HOST=env("REDIS_HOST")
 
 CACHES = {
     "default": {
@@ -202,4 +208,5 @@ CELERY_IMPORTS=(
     
 )
 
-
+CELERY_BEAT_SCHEDULER='django_celery_beat.schedulers:DatabaseScheduler'
+CELERY_BEAT_SCHEDULE= {}
