@@ -33,7 +33,7 @@ class PostListView(StandardAPIView):
             cached_posts = cache.get("post_list")
             if cached_posts:
                 for post in cached_posts:  # cached_posts es una lista de diccionarios
-                    redis_client.incr(f"post: impressions:{post['id']}")  # Accede como diccionario
+                    redis_client.incr(f"post: impressions:{post.id}")  # Accede como diccionario
                 return self.paginate(request,cached_posts)
 
             posts = Post.postobjects.all()

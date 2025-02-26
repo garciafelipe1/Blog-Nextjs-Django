@@ -5,15 +5,19 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.text import slugify
 from ckeditor.fields import RichTextField
+from django.utils.html import format_html
 
-from .utils import get_client_ip
-
+from apps.media.models import Media
+from apps.media.serializers import MediaSerializer
 
 def blog_thumbnail_directory(instance, filename):
-    return "blog/{0}/{1}".format(instance.title,filename)
+    sanitized_title=slugify.instance.title.replace(" ","-")
+    return "thumbnails/blog/{0}/{1}".format(sanitized_title,filename)
 
+    
 def category_thumbnail_directory(instance, filename):
-    return "blog_categories/{0}/{1}".format(instance.name,filename)
+    sanitized_name=slugify.instance.name.replace(" ","-")
+    return "thumbnails/blog_categories/{0}/{1}".format(sanitized_name,filename)
 
 
 
@@ -49,8 +53,8 @@ class Post(models.Model):
     title = models.CharField(max_length=128)
     description = models.CharField(max_length=256)
     content =RichTextField()
-    thumbnail = models.ImageField(upload_to=blog_thumbnail_directory)
-
+    thumbnail = models.ForeignKey(Media,on_delete=models.SET_NULL,null=True,blank=True,related_name='post_thumbnails')
+    
     keywords = models.CharField(max_length=128)
     slug = models.CharField(max_length=128)
     
@@ -72,6 +76,22 @@ class Post(models.Model):
     def __str__(self):
         return self.title
     
+    def thubnail_preview(self):
+        if self.thumbnail:
+            try:
+                serializers = MediaSerializer(instance=self.thumbnail)
+                data = serializers.data
+                print(f"Serializers data: {data}")  # Agrega esto
+                url = data.get('url')
+                print(f"URL: {url}")  # Agrega esto
+                if url:
+                    return format_html('<img src="{url}" style="width: 100px; height: auto;" />', url=url)
+                else:
+                    return 'URL no encontrada'
+            except Exception as e:
+                print(f"Error: {e}")  # Agrega esto
+                return f'Error: {e}'
+        return 'Sin miniatura'            
 
 
 class PostView(models.Model):

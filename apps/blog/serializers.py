@@ -2,6 +2,10 @@ from rest_framework import serializers
 
 from .models import Post,Category,Heading,PostView
 
+from apps.media.serializers import MediaSerializer
+
+from .models import Media 
+
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -36,6 +40,7 @@ class PostSerializer(serializers.ModelSerializer):
     category=CategorySerializer()
     headings=HeadingSerializer(many=True)
     view_count=serializers.SerializerMethodField()
+    thumbnail=MediaSerializer()
     class Meta:
         model=Post
         fields="__all__"
@@ -46,6 +51,7 @@ class PostSerializer(serializers.ModelSerializer):
 class PostListSerializer(serializers.ModelSerializer):
     category=CategoryListSerializer()
     view_count=serializers.SerializerMethodField()
+    thumbnail=MediaSerializer()
     class Meta:
         model=Post
         fields=[
@@ -60,4 +66,9 @@ class PostListSerializer(serializers.ModelSerializer):
     def get_view_count(self,obj):
         return obj.post_views.count()
 
- 
+
+
+class MediaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Media
+        fields = ('url',)

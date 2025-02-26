@@ -3,6 +3,8 @@ from ckeditor.widgets import CKEditorWidget
 from .models import Heading,Category,Post,PostAnalytics
 from django import forms
 
+from apps.media.models import Media
+
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
@@ -32,12 +34,22 @@ class PostAdminForm(forms.ModelForm):
         fields= '__all__'
  
 
-       
+class MediaInline(admin.TabularInline):
+    model = Heading
+    fields=(
+            "order",
+            "name",
+            "size",
+            "type",
+            "key",
+            "media_type",)
+    extra = 1
+     
         
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
     form=PostAdminForm
-    list_display = ('title', 'status', 'category', 'created_at', 'updated_at')
+    list_display = ('title', 'status', 'category', 'created_at', 'updated_at', 'thubnail_preview')
     search_fields = ('title', 'description', 'slug', 'content', 'keywords')
     prepopulated_fields = {'slug': ('title',)}
     list_filter = ('status', 'category', 'updated_at')
@@ -50,7 +62,6 @@ class PostAdmin(admin.ModelAdmin):
                 'title',
                 'description',
                 'content',
-                'thumbnail',
                 'keywords',
                 'slug',
                 'category',
@@ -60,7 +71,7 @@ class PostAdmin(admin.ModelAdmin):
             'fields': ('status', 'created_at', 'updated_at'),
         }),     
     )
-    inlines = [HeadingInline]
+    inlines = [HeadingInline, MediaInline]
 
 
 
